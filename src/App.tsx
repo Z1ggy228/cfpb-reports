@@ -8,7 +8,7 @@ import Admin from './pages/Admin';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/">
       <AdminProvider>
         <Routes>
           <Route path="/" element={<Home />} />
