@@ -233,7 +233,7 @@ function CaseDetails() {
                       Payment Required
                     </label>
                     <p className="text-2xl font-bold text-orange-600">
-                      {formatCurrency(caseData.payment_required)}
+                      {caseData.payment_required}
                     </p>
                   </div>
                 </div>

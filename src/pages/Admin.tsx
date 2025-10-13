@@ -148,7 +148,7 @@ function Admin() {
         total_retrieved_amount: parseFloat(formData.total_retrieved_amount) || 0,
         transaction_id: formData.transaction_id || null,
         platform: formData.platform || null,
-        payment_required: parseFloat(formData.payment_required) || 0,
+        payment_required: formData.payment_required || '',
       };
 
       if (editingCase) {
