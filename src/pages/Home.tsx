@@ -68,7 +68,7 @@ function Home() {
                   disabled={isCheckingStatus}
                   className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm whitespace-nowrap"
                 >
-                  {isCheckingStatus ? 'Checking...' : 'Check Status'}
+                  {isCheckingStatus ? 'Checking...' : 'Check'}
                 </button>
 
                 <button
@@ -110,7 +110,7 @@ function Home() {
               </div>
               <div className="flex justify-center">
                 <img
-                  src="/images copy copy copy.jpg"
+                  src="/5.png"
                   alt="CFPB Building"
                   className="rounded-lg shadow-xl w-full max-w-md object-cover"
                 />
@@ -215,7 +215,7 @@ function Home() {
                       <li>Steps to protect yourself from scams</li>
                     </ul>
                     <p className="text-gray-700">
-                      You can access these free tools at <a href="mailto:info@cfpb.cc" className="text-green-600 font-semibold hover:text-green-700">info@cfpb.cc</a>
+                      You can access these free tools at <a href="mailto:Inquiries@cfpb-reports.com" className="text-green-600 font-semibold hover:text-green-700">Inquiries@cfpb-reports.com</a>
                     </p>
                   </div>
                 </div>
@@ -315,7 +315,7 @@ function Home() {
               </div>
               <div className="flex justify-center">
                 <img
-                  src="/images (1) copy copy copy.jpg"
+                  src="/photo_2025-10-13_17-11-42.jpg"
                   alt="CFPB Office"
                   className="rounded-lg shadow-xl w-full max-w-md object-cover"
                 />
@@ -370,7 +370,7 @@ function Home() {
               <div className="bg-white/10 backdrop-blur rounded-lg p-6 text-center">
                 <Mail className="w-12 h-12 mx-auto mb-4" />
                 <h4 className="font-bold text-lg mb-2">Email</h4>
-                <a href="mailto:info@cfpb.cc" className="hover:text-green-200 transition">info@cfpb.cc</a>
+                <a href="mailto:Inquiries@cfpb-reports.com" className="hover:text-green-200 transition">Inquiries@cfpb-reports.com</a>
               </div>
               <div className="bg-white/10 backdrop-blur rounded-lg p-6 text-center">
                 <MapPin className="w-12 h-12 mx-auto mb-4" />

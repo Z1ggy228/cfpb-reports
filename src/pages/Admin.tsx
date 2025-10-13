@@ -553,10 +553,9 @@ function Admin() {
                     Payment Required
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     id="payment_required"
                     name="payment_required"
-                    step="0.01"
                     value={formData.payment_required}
                     onChange={handleInputChange}
                     className="w-full border-2 border-gray-300 focus:border-green-600 focus:outline-none px-4 py-2 rounded-lg text-gray-700"
