@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAdmin } from '../context/AdminContext';
-import { Plus, Edit2, Trash2, X, Save, LogOut, Upload } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Save, LogOut, Upload, Search } from 'lucide-react';
 
 interface Case {
   id: string;
@@ -63,6 +63,7 @@ function Admin() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [uploadingPdf, setUploadingPdf] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogout = () => {
     logout();
@@ -244,12 +245,30 @@ function Admin() {
 
   const statusOptions = ['Active', 'Blocked', 'Pending', 'On Hold', 'Received'];
 
+  const filteredCases = cases.filter(caseItem =>
+    searchQuery === '' ||
+    caseItem.case_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    caseItem.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    caseItem.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    caseItem.phone_number.includes(searchQuery)
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Case Management</h1>
           <div className="flex gap-3">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search by case number, name, email, phone..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="border-2 border-gray-300 focus:border-green-600 focus:outline-none pl-10 pr-4 py-3 rounded-lg text-gray-700 w-96"
+              />
+              <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            </div>
             <button
               onClick={() => handleOpenModal()}
               className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition shadow-md hover:shadow-lg flex items-center gap-2"
@@ -294,14 +313,14 @@ function Admin() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {cases.length === 0 ? (
+                  {filteredCases.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
-                        No cases found. Add your first case to get started.
+                        {searchQuery ? 'No cases match your search.' : 'No cases found. Add your first case to get started.'}
                       </td>
                     </tr>
                   ) : (
-                    cases.map((caseItem) => (
+                    filteredCases.map((caseItem) => (
                       <tr key={caseItem.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{caseItem.case_number}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
