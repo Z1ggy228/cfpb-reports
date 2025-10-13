@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAdmin } from '../context/AdminContext';
-import { Plus, Edit2, Trash2, X, Save, LogOut, Upload, Search } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Save, LogOut, Upload, Search, Mail } from 'lucide-react';
 
 interface Case {
   id: string;
@@ -38,6 +38,17 @@ interface CaseForm {
   payment_required: string;
 }
 
+interface ContactSubmission {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  subject: string;
+  message: string;
+  created_at: string;
+  is_read: boolean;
+}
+
 const emptyForm: CaseForm = {
   case_number: '',
   status: 'Pending',
@@ -64,6 +75,9 @@ function Admin() {
   const [error, setError] = useState('');
   const [uploadingPdf, setUploadingPdf] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<'cases' | 'submissions'>('cases');
+  const [contactSubmissions, setContactSubmissions] = useState<ContactSubmission[]>([]);
+  const [loadingSubmissions, setLoadingSubmissions] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -72,6 +86,7 @@ function Admin() {
 
   useEffect(() => {
     fetchCases();
+    fetchContactSubmissions();
   }, []);
 
   const fetchCases = async () => {
@@ -89,6 +104,56 @@ function Admin() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchContactSubmissions = async () => {
+    try {
+      setLoadingSubmissions(true);
+      const { data, error } = await supabase
+        .from('contact_submissions')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setContactSubmissions(data || []);
+    } catch (err) {
+      console.error('Failed to fetch contact submissions:', err);
+    } finally {
+      setLoadingSubmissions(false);
+    }
+  };
+
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('contact_submissions')
+        .update({ is_read: true })
+        .eq('id', id);
+
+      if (error) throw error;
+      setContactSubmissions(contactSubmissions.map(sub =>
+        sub.id === id ? { ...sub, is_read: true } : sub
+      ));
+    } catch (err) {
+      console.error('Failed to mark submission as read:', err);
+    }
+  };
+
+  const handleDeleteSubmission = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this submission?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('contact_submissions')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      setContactSubmissions(contactSubmissions.filter(sub => sub.id !== id));
+    } catch (err) {
+      alert('Failed to delete submission');
+      console.error(err);
     }
   };
 
@@ -257,7 +322,7 @@ function Admin() {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Case Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{activeTab === 'cases' ? 'Case Management' : 'Contact Submissions'}</h1>
           <div className="flex gap-3">
             <div className="relative">
               <input
@@ -286,18 +351,48 @@ function Admin() {
           </div>
         </div>
 
+        <div className="mb-6 flex gap-2">
+          <button
+            onClick={() => setActiveTab('cases')}
+            className={`px-6 py-3 rounded-lg font-semibold transition ${
+              activeTab === 'cases'
+                ? 'bg-green-600 text-white shadow-md'
+                : 'bg-white text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            Cases
+          </button>
+          <button
+            onClick={() => setActiveTab('submissions')}
+            className={`px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 ${
+              activeTab === 'submissions'
+                ? 'bg-green-600 text-white shadow-md'
+                : 'bg-white text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <Mail className="w-5 h-5" />
+            ОБРАЩЕНИЯ
+            {contactSubmissions.filter(sub => !sub.is_read).length > 0 && (
+              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                {contactSubmissions.filter(sub => !sub.is_read).length}
+              </span>
+            )}
+          </button>
+        </div>
+
         {error && !isModalOpen && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
             {error}
           </div>
         )}
 
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-            <p className="mt-4 text-gray-600">Loading cases...</p>
-          </div>
-        ) : (
+        {activeTab === 'cases' ? (
+          loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+              <p className="mt-4 text-gray-600">Loading cases...</p>
+            </div>
+          ) : (
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -385,6 +480,76 @@ function Admin() {
               </table>
             </div>
           </div>
+          )
+        ) : (
+          loadingSubmissions ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+              <p className="mt-4 text-gray-600">Loading submissions...</p>
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              {contactSubmissions.length === 0 ? (
+                <div className="px-6 py-12 text-center text-gray-500">
+                  No contact submissions yet.
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {contactSubmissions.map((submission) => (
+                    <div key={submission.id} className={`p-6 hover:bg-gray-50 ${!submission.is_read ? 'bg-blue-50' : ''}`}>
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="text-lg font-semibold text-gray-900">{submission.name}</h3>
+                            {!submission.is_read && (
+                              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                                NEW
+                              </span>
+                            )}
+                            <span className="text-sm text-gray-500">
+                              {new Date(submission.created_at).toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-600 mb-1">
+                            <strong>Email:</strong> {submission.email}
+                          </div>
+                          {submission.phone && (
+                            <div className="text-sm text-gray-600 mb-1">
+                              <strong>Phone:</strong> {submission.phone}
+                            </div>
+                          )}
+                          <div className="text-sm text-gray-600 mb-3">
+                            <strong>Subject:</strong> {submission.subject}
+                          </div>
+                          <div className="bg-gray-50 p-4 rounded-lg">
+                            <p className="text-gray-700 whitespace-pre-wrap">{submission.message}</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2 ml-4">
+                          {!submission.is_read && (
+                            <button
+                              onClick={() => handleMarkAsRead(submission.id)}
+                              className="text-green-600 hover:text-green-800 transition px-3 py-1 rounded bg-green-100 hover:bg-green-200 text-sm font-medium"
+                              title="Mark as read"
+                            >
+                              Mark Read
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleDeleteSubmission(submission.id)}
+                            className="text-red-600 hover:text-red-800 transition"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
         )}
       </div>
 

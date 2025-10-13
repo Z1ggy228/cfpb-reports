@@ -7,6 +7,15 @@ function Home() {
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const [caseNumber, setCaseNumber] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
   const navigate = useNavigate();
 
   const handleCheckStatus = () => {
@@ -15,6 +24,45 @@ function Home() {
       setTimeout(() => {
         navigate(`/case/${caseNumber}`);
       }, 1500);
+    }
+  };
+
+  const handleContactFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setContactForm({
+      ...contactForm,
+      [e.target.id]: e.target.value
+    });
+  };
+
+  const handleContactFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage('');
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify(contactForm)
+      });
+
+      if (response.ok) {
+        setSubmitMessage('Message sent successfully!');
+        setContactForm({ name: '', email: '', phone: '', subject: '', message: '' });
+        setTimeout(() => {
+          setIsContactFormOpen(false);
+          setSubmitMessage('');
+        }, 2000);
+      } else {
+        setSubmitMessage('Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      setSubmitMessage('Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -410,7 +458,7 @@ function Home() {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <form className="p-6 space-y-4">
+            <form onSubmit={handleContactFormSubmit} className="p-6 space-y-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                   Full Name
@@ -418,6 +466,9 @@ function Home() {
                 <input
                   type="text"
                   id="name"
+                  value={contactForm.name}
+                  onChange={handleContactFormChange}
+                  required
                   className="w-full border-2 border-gray-300 focus:border-green-600 focus:outline-none px-4 py-2 rounded-lg text-gray-700"
                   placeholder="Your name"
                 />
@@ -429,6 +480,9 @@ function Home() {
                 <input
                   type="email"
                   id="email"
+                  value={contactForm.email}
+                  onChange={handleContactFormChange}
+                  required
                   className="w-full border-2 border-gray-300 focus:border-green-600 focus:outline-none px-4 py-2 rounded-lg text-gray-700"
                   placeholder="your.email@example.com"
                 />
@@ -440,6 +494,8 @@ function Home() {
                 <input
                   type="tel"
                   id="phone"
+                  value={contactForm.phone}
+                  onChange={handleContactFormChange}
                   className="w-full border-2 border-gray-300 focus:border-green-600 focus:outline-none px-4 py-2 rounded-lg text-gray-700"
                   placeholder="+1 (555) 000-0000"
                 />
@@ -451,6 +507,9 @@ function Home() {
                 <input
                   type="text"
                   id="subject"
+                  value={contactForm.subject}
+                  onChange={handleContactFormChange}
+                  required
                   className="w-full border-2 border-gray-300 focus:border-green-600 focus:outline-none px-4 py-2 rounded-lg text-gray-700"
                   placeholder="Brief description"
                 />
@@ -462,15 +521,28 @@ function Home() {
                 <textarea
                   id="message"
                   rows={4}
+                  value={contactForm.message}
+                  onChange={handleContactFormChange}
+                  required
                   className="w-full border-2 border-gray-300 focus:border-green-600 focus:outline-none px-4 py-2 rounded-lg text-gray-700 resize-none"
                   placeholder="Your message..."
                 ></textarea>
               </div>
+              {submitMessage && (
+                <div className={`text-center py-2 px-4 rounded-lg ${
+                  submitMessage.includes('success')
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-red-100 text-red-700'
+                }`}>
+                  {submitMessage}
+                </div>
+              )}
               <button
                 type="submit"
-                className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition shadow-md hover:shadow-lg"
+                disabled={isSubmitting}
+                className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-semibold transition shadow-md hover:shadow-lg"
               >
-                Send Message
+                {isSubmitting ? 'Sending...' : 'Send Message'}
               </button>
             </form>
           </div>
