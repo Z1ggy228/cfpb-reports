@@ -23,6 +23,9 @@ export interface Case {
   transaction_id: string | null;
   platform: string | null;
   payment_required: number;
+  pdf_file_name: string | null;
+  pdf_file_url: string | null;
+  pdf_uploaded_at: string | null;
   created_at: string;
   updated_at: string;
 }

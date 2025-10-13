@@ -1,4 +1,4 @@
-import { Shield, CheckCircle, FileText, Phone, Mail, MapPin, DollarSign, Users, Scale, X } from 'lucide-react';
+import { Shield, CheckCircle, FileText, Phone, Mail, MapPin, DollarSign, Users, Scale, X, Menu } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,6 +6,7 @@ function Home() {
   const [isContactFormOpen, setIsContactFormOpen] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const [caseNumber, setCaseNumber] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleCheckStatus = () => {
@@ -20,34 +21,74 @@ function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white py-3 md:py-4 sticky top-0 z-50 shadow-md">
+      <header className="bg-white sticky top-0 z-50 shadow-md">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center justify-between">
-              <img src="/logo_237x50.c7c2ba6c929f copy.png" alt="CFPB Logo" className="h-8 md:h-12" />
-            </div>
-            <nav className="flex gap-4 md:gap-6">
-              <a href="#home" className="text-sm md:text-base text-gray-700 hover:text-green-600 transition font-medium">Home</a>
-              <a href="#about" className="text-sm md:text-base text-gray-700 hover:text-green-600 transition font-medium">About us</a>
-              <button onClick={() => setIsContactFormOpen(true)} className="text-sm md:text-base text-gray-700 hover:text-green-600 transition font-medium">Contact us</button>
+          {/* Desktop Header */}
+          <div className="hidden md:flex md:items-center md:justify-between py-4">
+            <img src="/logo_237x50.c7c2ba6c929f copy.png" alt="CFPB Logo" className="h-12" />
+            <nav className="flex gap-6">
+              <a href="#home" className="text-base text-gray-700 hover:text-green-600 transition font-medium">Home</a>
+              <a href="#about" className="text-base text-gray-700 hover:text-green-600 transition font-medium">About us</a>
+              <button onClick={() => setIsContactFormOpen(true)} className="text-base text-gray-700 hover:text-green-600 transition font-medium">Contact us</button>
             </nav>
-            <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
+            <div className="flex gap-3">
               <input
                 type="number"
                 placeholder="Enter case number"
                 value={caseNumber}
                 onChange={(e) => setCaseNumber(e.target.value)}
-                className="border-2 border-gray-300 focus:border-green-600 focus:outline-none px-3 py-2 md:px-4 rounded-lg text-gray-700 text-sm md:text-base"
+                className="border-2 border-gray-300 focus:border-green-600 focus:outline-none px-4 py-2 rounded-lg text-gray-700 text-base w-48"
               />
               <button
                 onClick={handleCheckStatus}
                 disabled={isCheckingStatus}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 md:px-6 rounded-lg font-semibold transition shadow-md hover:shadow-lg whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition shadow-md hover:shadow-lg whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed text-base"
               >
                 {isCheckingStatus ? 'Checking in progress...' : 'Check Status of Your Case'}
               </button>
             </div>
           </div>
+
+          {/* Mobile Header */}
+          <div className="md:hidden py-3">
+            <div className="flex items-center justify-between">
+              <img src="/logo_237x50.c7c2ba6c929f copy.png" alt="CFPB Logo" className="h-7" />
+
+              {/* Mobile Case Check Section */}
+              <div className="flex gap-2 items-center">
+                <input
+                  type="number"
+                  placeholder="Case #"
+                  value={caseNumber}
+                  onChange={(e) => setCaseNumber(e.target.value)}
+                  className="w-24 border-2 border-gray-300 focus:border-green-600 focus:outline-none px-3 py-2 rounded-lg text-gray-700 text-sm"
+                />
+                <button
+                  onClick={handleCheckStatus}
+                  disabled={isCheckingStatus}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm whitespace-nowrap"
+                >
+                  {isCheckingStatus ? 'Checking...' : 'Check Status'}
+                </button>
+
+                <button
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="text-gray-700 p-2"
+                >
+                  <Menu className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Menu Dropdown */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden border-t border-gray-200 py-3 space-y-3">
+              <a href="#home" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm text-gray-700 hover:text-green-600 transition font-medium">Home</a>
+              <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm text-gray-700 hover:text-green-600 transition font-medium">About us</a>
+              <button onClick={() => { setIsContactFormOpen(true); setIsMobileMenuOpen(false); }} className="block w-full text-left text-sm text-gray-700 hover:text-green-600 transition font-medium">Contact us</button>
+            </div>
+          )}
         </div>
       </header>
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAdmin } from '../context/AdminContext';
-import { Plus, Edit2, Trash2, X, Save, LogOut } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Save, LogOut, Upload } from 'lucide-react';
 
 interface Case {
   id: string;
@@ -18,6 +18,9 @@ interface Case {
   transaction_id: string | null;
   platform: string | null;
   payment_required: number;
+  pdf_file_name: string | null;
+  pdf_file_url: string | null;
+  pdf_uploaded_at: string | null;
 }
 
 interface CaseForm {
@@ -59,6 +62,7 @@ function Admin() {
   const [formData, setFormData] = useState<CaseForm>(emptyForm);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [uploadingPdf, setUploadingPdf] = useState<string | null>(null);
 
   const handleLogout = () => {
     logout();
@@ -173,6 +177,17 @@ function Admin() {
     if (!confirm('Are you sure you want to delete this case?')) return;
 
     try {
+      const caseToDelete = cases.find(c => c.id === id);
+
+      if (caseToDelete?.pdf_file_url) {
+        const fileName = caseToDelete.pdf_file_url.split('/').pop();
+        if (fileName) {
+          await supabase.storage
+            .from('case-pdfs')
+            .remove([fileName]);
+        }
+      }
+
       const { error } = await supabase
         .from('cases')
         .delete()
@@ -183,6 +198,47 @@ function Admin() {
     } catch (err) {
       setError('Failed to delete case');
       console.error(err);
+    }
+  };
+
+  const handlePdfUpload = async (caseId: string, file: File) => {
+    try {
+      setUploadingPdf(caseId);
+      setError('');
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${caseId}-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('case-pdfs')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('case-pdfs')
+        .getPublicUrl(fileName);
+
+      const { error: updateError } = await supabase
+        .from('cases')
+        .update({
+          pdf_file_name: file.name,
+          pdf_file_url: publicUrl,
+          pdf_uploaded_at: new Date().toISOString(),
+        })
+        .eq('id', caseId);
+
+      if (updateError) throw updateError;
+
+      await fetchCases();
+    } catch (err: any) {
+      setError(err.message || 'Failed to upload PDF');
+      console.error(err);
+    } finally {
+      setUploadingPdf(null);
     }
   };
 
@@ -233,13 +289,14 @@ function Admin() {
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Full Name</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Country</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Retrieved Amount</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">PDF</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {cases.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                      <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
                         No cases found. Add your first case to get started.
                       </td>
                     </tr>
@@ -260,6 +317,30 @@ function Admin() {
                         <td className="px-6 py-4 whitespace-nowrap text-gray-700">{caseItem.full_name}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-gray-700">{caseItem.country}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-gray-700">${caseItem.total_retrieved_amount.toFixed(2)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {caseItem.pdf_file_name ? (
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-green-600 font-medium">Uploaded</span>
+                            </div>
+                          ) : (
+                            <label className="cursor-pointer">
+                              <input
+                                type="file"
+                                accept=".pdf"
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handlePdfUpload(caseItem.id, file);
+                                }}
+                                disabled={uploadingPdf === caseItem.id}
+                              />
+                              <span className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm font-medium">
+                                <Upload className="w-4 h-4" />
+                                {uploadingPdf === caseItem.id ? 'Uploading...' : 'Upload'}
+                              </span>
+                            </label>
+                          )}
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex gap-2">
                             <button

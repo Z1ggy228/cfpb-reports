@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Shield, ArrowLeft, Loader2 } from 'lucide-react';
+import { Shield, ArrowLeft, Loader2, Download } from 'lucide-react';
 import { supabase, Case } from '../lib/supabase';
 
 function CaseDetails() {
@@ -107,8 +107,7 @@ function CaseDetails() {
               </p>
               <button
                 onClick={() => navigate('/')}
-                className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition shadow-md hover:shadow-lg"
-              >
+                className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition shadow-md hover:shadow-lg">
                 <ArrowLeft className="w-5 h-5" />
                 Back to Home
               </button>
@@ -127,8 +126,7 @@ function CaseDetails() {
             <img src="/logo_237x50.c7c2ba6c929f copy.png" alt="CFPB Logo" className="h-12" />
             <button
               onClick={() => navigate('/')}
-              className="inline-flex items-center gap-2 text-gray-700 hover:text-green-600 transition font-medium"
-            >
+              className="inline-flex items-center gap-2 text-gray-700 hover:text-green-600 transition font-medium">
               <ArrowLeft className="w-5 h-5" />
               Back to Home
             </button>
@@ -148,9 +146,8 @@ function CaseDetails() {
               <div className="mb-6">
                 <span
                   className={`inline-block px-4 py-2 rounded-full text-sm font-semibold border-2 ${getStatusColor(
-                    caseData.status
-                  )}`}
-                >
+                    caseData.status,
+                  )}`}>
                   Status: {caseData.status}
                 </span>
               </div>
@@ -158,16 +155,12 @@ function CaseDetails() {
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      Full Name
-                    </label>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
                     <p className="text-lg font-semibold text-gray-900">{caseData.full_name}</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      ID Number
-                    </label>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">ID Number</label>
                     <p className="text-lg font-semibold text-gray-900">{caseData.id_number}</p>
                   </div>
 
@@ -177,67 +170,74 @@ function CaseDetails() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      Phone Number
-                    </label>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
                     <p className="text-lg font-semibold text-gray-900">{caseData.phone_number}</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      Date of Birth
-                    </label>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {formatDate(caseData.date_of_birth)}
-                    </p>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Date of Birth</label>
+                    <p className="text-lg font-semibold text-gray-900">{formatDate(caseData.date_of_birth)}</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      Country
-                    </label>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Country</label>
                     <p className="text-lg font-semibold text-gray-900">{caseData.country}</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      Total Retrieved Amount
-                    </label>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Total Retrieved Amount</label>
                     <p className="text-2xl font-bold text-green-600">
                       {formatCurrency(caseData.total_retrieved_amount)}
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      Transaction ID
-                    </label>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {caseData.transaction_id || 'N/A'}
-                    </p>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Transaction ID</label>
+                    <p className="text-lg font-semibold text-gray-900">{caseData.transaction_id || 'N/A'}</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      Platform
-                    </label>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {caseData.platform || 'N/A'}
-                    </p>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Platform</label>
+                    <p className="text-lg font-semibold text-gray-900">{caseData.platform || 'N/A'}</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      Payment Required
-                    </label>
-                    <p className="text-2xl font-bold text-orange-600">
-                      {formatCurrency(caseData.payment_required)}
-                    </p>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Payment Required</label>
+                    <p className="text-2xl font-bold text-orange-600">{formatCurrency(caseData.payment_required)}</p>
                   </div>
                 </div>
               </div>
+
+              {caseData.pdf_file_url && (
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <div className="bg-green-50 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                      <Shield className="w-5 h-5 text-green-600" />
+                      Case Documents
+                    </h3>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">PDF Document Available</p>
+                        <p className="text-sm font-medium text-gray-900">{caseData.pdf_file_name}</p>
+                        {caseData.pdf_uploaded_at && (
+                          <p className="text-xs text-gray-500 mt-1">Uploaded: {formatDate(caseData.pdf_uploaded_at)}</p>
+                        )}
+                      </div>
+                      <a
+                        href={caseData.pdf_file_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download={caseData.pdf_file_name || 'document.pdf'}
+                        className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition shadow-md hover:shadow-lg">
+                        <Download className="w-5 h-5" />
+                        Download PDF
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
