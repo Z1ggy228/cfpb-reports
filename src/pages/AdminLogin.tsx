@@ -16,16 +16,19 @@ function AdminLogin() {
     setError('');
     setLoading(true);
 
-    setTimeout(() => {
-      const isValid = login(username, password);
+    try {
+      const isValid = await login(username, password);
 
       if (isValid) {
         navigate('/admin/dashboard');
       } else {
         setError('Invalid username or password');
-        setLoading(false);
       }
-    }, 500);
+    } catch (err) {
+      setError('An error occurred during login');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,20 +52,20 @@ function AdminLogin() {
 
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                Username
+                Email
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <User className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  type="text"
+                  type="email"
                   id="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   className="block w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none text-gray-700"
-                  placeholder="Enter username"
+                  placeholder="admin@example.com"
                 />
               </div>
             </div>
