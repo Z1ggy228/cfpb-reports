@@ -60,11 +60,15 @@ function CaseDetails() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
+  const formatAmount = (amount: string) => {
+    const numericValue = parseFloat(amount);
+    if (isNaN(numericValue)) {
+      return amount;
+    }
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-    }).format(amount);
+    }).format(numericValue);
   };
 
   const formatDate = (dateString: string | null) => {
@@ -206,7 +210,7 @@ function CaseDetails() {
                       Total Retrieved Amount
                     </label>
                     <p className="text-2xl font-bold text-green-600">
-                      {formatCurrency(caseData.total_retrieved_amount)}
+                      {formatAmount(caseData.total_retrieved_amount)}
                     </p>
                   </div>
 
