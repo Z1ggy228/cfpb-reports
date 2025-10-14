@@ -23,7 +23,9 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
+      (async () => {
+        setIsAuthenticated(!!session);
+      })();
     });
 
     return () => subscription.unsubscribe();

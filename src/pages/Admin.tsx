@@ -14,7 +14,7 @@ interface Case {
   phone_number: string;
   date_of_birth: string | null;
   country: string;
-  total_retrieved_amount: number;
+  total_retrieved_amount: string;
   transaction_id: string | null;
   platform: string | null;
   payment_required: number;
@@ -169,7 +169,7 @@ function Admin() {
         phone_number: caseData.phone_number,
         date_of_birth: caseData.date_of_birth || '',
         country: caseData.country,
-        total_retrieved_amount: caseData.total_retrieved_amount.toString(),
+        total_retrieved_amount: caseData.total_retrieved_amount,
         transaction_id: caseData.transaction_id || '',
         platform: caseData.platform || '',
         payment_required: caseData.payment_required.toString(),
@@ -210,7 +210,7 @@ function Admin() {
         phone_number: formData.phone_number,
         date_of_birth: formData.date_of_birth || null,
         country: formData.country,
-        total_retrieved_amount: parseFloat(formData.total_retrieved_amount) || 0,
+        total_retrieved_amount: formData.total_retrieved_amount || '',
         transaction_id: formData.transaction_id || null,
         platform: formData.platform || null,
         payment_required: formData.payment_required || '',
@@ -430,7 +430,7 @@ function Admin() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-gray-700">{caseItem.full_name}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-gray-700">{caseItem.country}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-700">${caseItem.total_retrieved_amount.toFixed(2)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-700">{caseItem.total_retrieved_amount}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {caseItem.pdf_file_name ? (
                             <div className="flex items-center gap-2">
@@ -703,12 +703,12 @@ function Admin() {
                     Total Retrieved Amount
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     id="total_retrieved_amount"
                     name="total_retrieved_amount"
-                    step="0.01"
                     value={formData.total_retrieved_amount}
                     onChange={handleInputChange}
+                    placeholder="e.g., $1,234.56 or 1000 USD"
                     className="w-full border-2 border-gray-300 focus:border-green-600 focus:outline-none px-4 py-2 rounded-lg text-gray-700"
                   />
                 </div>
