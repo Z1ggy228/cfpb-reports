@@ -1,43 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Consumer Financial Protection</title>
+    <title>Доступ запрещён</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0 15px;
+        background: #00aeef;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .logo {
+        width: 90px;
+        margin: 20px;
+      }
+
+      .box {
+        background: #fff;
+        max-width: 800px;
+        width: 100%;
+        padding: 40px 28px;
+        margin-top: 40px;
+        border-radius: 20px;
+        text-align: center;
+        box-sizing: border-box;
+      }
+
+      .title {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #333;
+      }
+
+      .text {
+        font-size: 16px;
+        line-height: 1.4;
+        color: #555;
+      }
+
+      @media (max-width: 480px) {
+        .box {
+          padding: 20px;
+          border-radius: 16px;
+        }
+        .title {
+          font-size: 22px;
+        }
+        .text {
+          font-size: 14px;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-
-    <!-- Begin of Chaport Live Chat code -->
-    <script type="text/javascript">
-      (function (w, d, v3) {
-        w.chaportConfig = {
-          appId: '690672c310a88970784d636b',
-        };
-
-        if (w.chaport) return;
-        v3 = w.chaport = {};
-        v3._q = [];
-        v3._l = {};
-        v3.q = function () {
-          v3._q.push(arguments);
-        };
-        v3.on = function (e, fn) {
-          if (!v3._l[e]) v3._l[e] = [];
-          v3._l[e].push(fn);
-        };
-        var s = d.createElement('script');
-        s.type = 'text/javascript';
-        s.async = true;
-        s.src = 'https://app.chaport.com/javascripts/insert.js';
-        var ss = d.getElementsByTagName('script')[0];
-        ss.parentNode.insertBefore(s, ss);
-      })(window, document);
-    </script>
-    <!-- End of Chaport Live Chat code -->
-    <script type="module" src="/src/main.tsx"></script>
+    <!-- Белый блок -->
+    <div class="box">
+      <div class="title">Доступ запрещён</div>
+      <div class="text">
+        Доступ к информационному ресурсу ограничен на основании Федерального Закона от 27 июля 2006 года № 149-ФЗ «Об
+        информации, информационных технологиях и о защите информации».
+      </div>
+    </div>
   </body>
 </html>
