@@ -1,15 +1,9 @@
 {
   "redirects": [
     {
-      "source": "/((?!access-restricted|.*\\.(?:js|css|png|jpg|jpeg|svg|gif|ico|json|txt|woff|woff2|ttf|map|webp|avif|wasm|webmanifest)$).*)",
-      "destination": "/access-restricted",
+      "source": "/((?!.*\\.(?:js|css|png|jpg|jpeg|svg|gif|ico|json|txt|woff|woff2|ttf|map|webp|avif|wasm|webmanifest)$).+)",
+      "destination": "/",
       "permanent": false
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/access-restricted",
-      "destination": "/"
     }
   ]
 }
