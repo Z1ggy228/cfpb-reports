@@ -19,7 +19,7 @@ function Chevron({ direction }: { direction: 'left' | 'right' }) {
 
 function AccessRestricted() {
   useEffect(() => {
-    document.title = 'Доступ временно ограничен';
+    document.title = 'Доступ запрещён';
 
     if (window.location.pathname !== '/') {
       window.history.replaceState({}, '', '/');
@@ -39,15 +39,11 @@ function AccessRestricted() {
 
       <section
         className="mx-auto w-full max-w-[602px] rounded-[21px] bg-white px-8 py-8 text-center shadow-[0_2px_10px_rgba(0,0,0,0.14)] sm:px-12 sm:py-7"
-        style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
-      >
+        style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
         <h1 className="text-[31px] font-bold leading-none text-[#2f3c4e] sm:text-[33px]">Доступ запрещён</h1>
         <p className="mx-auto mt-5 max-w-[500px] text-[20px] leading-[1.5] text-[#4a5666] sm:text-[21px]">
-          Доступ к информационному ресурсу временно ограничен
-          <br />
-          до подтверждения оплаты продления домена и
-          <br />
-          возобновления обслуживания сайта.
+          Доступ к информационному ресурсу ограничен на основании Федерального Закона от 27 июля 2006 года № 149-ФЗ «Об
+          информации, информационных технологиях и о защите информации».
         </p>
       </section>
     </main>
